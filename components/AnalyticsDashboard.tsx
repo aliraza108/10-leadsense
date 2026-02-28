@@ -24,7 +24,7 @@ export default function AnalyticsDashboard() {
     expected_revenue: 4.2,
   };
 
-  const segments = data.segments ?? [
+  const segments: { status: string; value: number }[] = data.segments ?? [
     { status: "HOT", value: 38 },
     { status: "WARM", value: 24 },
     { status: "NURTURE", value: 20 },
@@ -86,34 +86,40 @@ export default function AnalyticsDashboard() {
                 <h3 className="text-sm font-semibold text-text">Segment Distribution</h3>
                 <div className="mt-6 flex items-center justify-center">
                   <svg width="180" height="180" viewBox="0 0 180 180">
-                    {segments.reduce(
-                      (acc, seg, idx) => {
-                        const total = segments.reduce((sum, s) => sum + s.value, 0);
-                        const startAngle = acc.angle;
-                        const angle = (seg.value / total) * 2 * Math.PI;
-                        const endAngle = startAngle + angle;
-                        const largeArc = angle > Math.PI ? 1 : 0;
-                        const startX = 90 + 70 * Math.cos(startAngle);
-                        const startY = 90 + 70 * Math.sin(startAngle);
-                        const endX = 90 + 70 * Math.cos(endAngle);
-                        const endY = 90 + 70 * Math.sin(endAngle);
-                        const path = `M 90 90 L ${startX} ${startY} A 70 70 0 ${largeArc} 1 ${endX} ${endY} Z`;
-                        const color = statusColors[seg.status as keyof typeof statusColors]?.bg || "#7C3AED";
-                        acc.paths.push(
-                          <motion.path
-                            key={seg.status}
-                            d={path}
-                            fill={color}
-                            initial={{ pathLength: 0 }}
-                            whileInView={{ pathLength: 1 }}
-                            transition={{ duration: 0.8, delay: idx * 0.2 }}
-                          />
-                        );
-                        acc.angle = endAngle;
-                        return acc;
-                      },
-                      { angle: -Math.PI / 2, paths: [] as JSX.Element[] }
-                    ).paths}
+                    {(() => {
+                      type Segment = { status: string; value: number };
+                      type SegmentAccumulator = { angle: number; paths: JSX.Element[] };
+
+                      const total = segments.reduce((sum, s) => sum + s.value, 0);
+
+                      return segments.reduce<SegmentAccumulator>(
+                        (acc, seg, idx) => {
+                          const startAngle = acc.angle;
+                          const angle = (seg.value / total) * 2 * Math.PI;
+                          const endAngle = startAngle + angle;
+                          const largeArc = angle > Math.PI ? 1 : 0;
+                          const startX = 90 + 70 * Math.cos(startAngle);
+                          const startY = 90 + 70 * Math.sin(startAngle);
+                          const endX = 90 + 70 * Math.cos(endAngle);
+                          const endY = 90 + 70 * Math.sin(endAngle);
+                          const path = `M 90 90 L ${startX} ${startY} A 70 70 0 ${largeArc} 1 ${endX} ${endY} Z`;
+                          const color = statusColors[seg.status as keyof typeof statusColors]?.bg || "#7C3AED";
+                          acc.paths.push(
+                            <motion.path
+                              key={seg.status}
+                              d={path}
+                              fill={color}
+                              initial={{ pathLength: 0 }}
+                              whileInView={{ pathLength: 1 }}
+                              transition={{ duration: 0.8, delay: idx * 0.2 }}
+                            />
+                          );
+                          acc.angle = endAngle;
+                          return acc;
+                        },
+                        { angle: -Math.PI / 2, paths: [] }
+                      ).paths;
+                    })()}
                   </svg>
                 </div>
               </div>
