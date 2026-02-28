@@ -9,11 +9,8 @@ export default function OutreachGenerator({
 }: {
   onGenerate: (type: string, tone: string) => Promise<string>;
 }) {
-  type MessageType = (typeof messageTypes)[number];
-  type Tone = (typeof tones)[number];
-
-  const [messageType, setMessageType] = useState<MessageType>(messageTypes[0]);
-  const [tone, setTone] = useState<Tone>(tones[0]);
+  const [messageType, setMessageType] = useState<string>(messageTypes[0]);
+  const [tone, setTone] = useState<string>(tones[0]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [displayed, setDisplayed] = useState("");
