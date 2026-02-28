@@ -39,7 +39,12 @@ export default function AnalyticsDashboard() {
     deal_value: `$${(2.4 - i * 0.1).toFixed(1)}M`,
   }));
 
-  const revenueRows = data.revenue ?? [
+  const revenueRows: {
+    segment: string;
+    pipeline_value: string;
+    conversion: string;
+    expected: string;
+  }[] = data.revenue ?? [
     { segment: "HOT", pipeline_value: "$3.2M", conversion: "62%", expected: "$1.9M" },
     { segment: "WARM", pipeline_value: "$2.1M", conversion: "38%", expected: "$0.8M" },
     { segment: "NURTURE", pipeline_value: "$1.4M", conversion: "18%", expected: "$0.3M" },
