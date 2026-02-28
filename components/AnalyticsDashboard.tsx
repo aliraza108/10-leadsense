@@ -17,39 +17,47 @@ const stagger = {
 export default function AnalyticsDashboard() {
   const { data, loading, error } = useAnalytics();
 
-  const overview = data.overview ?? {
+  const overview = (data.overview && typeof data.overview === "object" ? data.overview : null) ?? {
     total_leads: 12847,
     hot_leads: 2403,
     avg_score: 84,
     expected_revenue: 4.2,
   };
 
-  const segments: { status: string; value: number }[] = data.segments ?? [
+  const segmentsFallback: { status: string; value: number }[] = [
     { status: "HOT", value: 38 },
     { status: "WARM", value: 24 },
     { status: "NURTURE", value: 20 },
     { status: "COLD", value: 18 },
   ];
+  const segments: { status: string; value: number }[] = Array.isArray(data.segments) ? data.segments : segmentsFallback;
 
-  const topLeads = data.topLeads ?? Array.from({ length: 10 }, (_, i) => ({
+  const topLeadsFallback = Array.from({ length: 10 }, (_, i) => ({
     id: `lead-${i + 1}`,
     company: `Company ${i + 1}`,
     score: 96 - i,
     status: i === 0 ? "HOT" : "WARM",
     deal_value: `$${(2.4 - i * 0.1).toFixed(1)}M`,
   }));
+  const topLeads = Array.isArray(data.topLeads) ? data.topLeads : topLeadsFallback;
 
-  const revenueRows: {
+  const revenueFallback: {
     segment: string;
     pipeline_value: string;
     conversion: string;
     expected: string;
-  }[] = data.revenue ?? [
+  }[] = [
     { segment: "HOT", pipeline_value: "$3.2M", conversion: "62%", expected: "$1.9M" },
     { segment: "WARM", pipeline_value: "$2.1M", conversion: "38%", expected: "$0.8M" },
     { segment: "NURTURE", pipeline_value: "$1.4M", conversion: "18%", expected: "$0.3M" },
     { segment: "COLD", pipeline_value: "$0.9M", conversion: "8%", expected: "$0.1M" },
   ];
+  const revenueRows: {
+    segment: string;
+    pipeline_value: string;
+    conversion: string;
+    expected: string;
+  }[] = Array.isArray(data.revenue) ? data.revenue : revenueFallback;
 
   return (
     <section className="section" id="analytics">
