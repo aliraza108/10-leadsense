@@ -11,6 +11,12 @@ export type Lead = {
   phone?: string;
   company?: string;
   company_name?: string;
+  job_title?: string;
+  team_size?: string | number;
+  location?: string;
+  website?: string;
+  linkedin_url?: string;
+  company_stage?: string;
   industry?: string;
   status?: string;
   score?: number;
